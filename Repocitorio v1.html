@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositorio Personal</title>
+    <style>
+        /* === TEMA OSCURO (Tonos negros y grises oscuros, sin azules) === */
+        :root[data-theme="dark"] {
+            --bg-color: #000000;
+            --surface-color: #121212;
+            --surface-hover: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #888888;
+            --accent-color: #ffffff;
+            --accent-hover: #cccccc;
+            --border-color: #2a2a2a;
+            --danger-color: #ff4444;
+            --radius: 4px;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        :root[data-theme="light"] {
+            --bg-color: #ffffff;
+            --surface-color: #f5f5f5;
+            --surface-hover: #e8e8e8;
+            --text-color: #111111;
+            --text-muted: #666666;
+            --accent-color: #000000;
+            --accent-hover: #333333;
+            --border-color: #dddddd;
+            --danger-color: #cc0000;
+            --radius: 4px;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === BARRA LATERAL (Ocultable) === */
+        aside {
+            width: 260px;
+            background-color: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transition: width 0.2s ease, padding 0.2s ease;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+        
+        aside.collapsed {
+            width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            border-right: none;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-section { margin-bottom: 25px; }
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .nav-button:hover, .nav-button.active { background-color: var(--surface-hover); }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .shortcut-item:hover { background-color: var(--surface-hover); }
+        .shortcut-color { width: 10px; height: 10px; border-radius: 50%; }
+        .internal-icon { font-size: 12px; opacity: 0.7; margin-left: auto; }
+
+        /* === CONTENIDO PRINCIPAL === */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--bg-color);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            gap: 20px;
+        }
+
+        .search-container { flex: 1; max-width: 500px; display: flex; align-items: center; gap: 10px; }
+
+        input[type="text"], input[type="url"], input[type="color"], textarea {
+            width: 100%;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--text-color); }
+
+        /* Botones Minimalistas */
+        .btn {
+            background-color: var(--surface-hover);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { background-color: var(--border-color); }
+        .btn-primary { background-color: var(--text-color); color: var(--bg-color); border: none; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-danger { color: var(--danger-color); border-color: var(--danger-color); background: transparent; }
+        .btn-danger:hover { background-color: var(--danger-color); color: #fff; }
+
+        .btn-icon {
+            background: transparent; border: none; color: var(--text-color);
+            cursor: pointer; padding: 5px; border-radius: 4px; font-size: 16px;
+        }
+        .btn-icon:hover { background: var(--surface-hover); }
+
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+
+        /* Filtro de categoría discreto y minimalista */
+        #tag-filter-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--surface-color);
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            width: fit-content;
+        }
+        #tag-filter-bar.active { display: flex; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* Miniaturas de publicaciones con bordes redondeados exclusivos */
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Redondeado solicitado para miniaturas */
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.15s ease;
+        }
+        .card:hover { border-color: var(--text-muted); }
+        
+        .card-thumb {
+            width: 100%;
+            height: 140px;
+            background-color: var(--surface-hover);
+            object-fit: cover;
+            display: block;
+        }
+        .card-thumb-placeholder {
+            width: 100%;
+            height: 140px;
+            background-color: var(--surface-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card-body h3 { font-size: 15px; font-weight: 500; }
+        .card .tags { font-size: 11px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 4px; }
+
+        /* === MODALES ESTÁNDAR === */
+        .modal-backdrop {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-backdrop.active { display: flex; }
+
+        .modal {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-muted); }
+        
+        /* Vista previa de imagen */
+        #img-preview-container { margin-top: 10px; display: none; }
+        #img-preview-container img { width: 100%; max-height: 200px; object-fit: contain; border: 1px solid var(--border-color); border-radius: var(--radius); }
+
+        /* === VISTA COMPLETA DE PUBLICACIÓN Y VISOR IFRAME === */
+        .full-screen-view {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-color); z-index: 2000; flex-direction: column; overflow-y: auto;
+        }
+        .full-screen-view.active { display: flex; }
+
+        .fs-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; background-color: var(--bg-color); z-index: 10;
+        }
+
+        .fs-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+
+        /* Menú 3 puntos */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 100%;
+            background-color: var(--surface-color); min-width: 120px;
+            border: 1px solid var(--border-color); z-index: 1; border-radius: var(--radius);
+        }
+        .dropdown-content.show { display: block; }
+        .dropdown-content button {
+            width: 100%; text-align: left; background: none; border: none;
+            padding: 10px 15px; color: var(--text-color); cursor: pointer; font-size: 14px;
+        }
+        .dropdown-content button:hover { background-color: var(--surface-hover); }
+
+        /* Contenido multimedia en vista completa con bordes redondeados */
+        .media-container { width: 100%; margin-top: 20px; background: var(--surface-color); text-align: center; }
+        .media-container img, .media-container video, .media-container iframe {
+            max-width: 100%; max-height: 80vh; display: inline-block; border: none; border-radius: 8px;
+        }
+
+        /* Tarjeta alternativa para enlaces que bloquean iframe */
+        .fallback-embed-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        .fallback-embed-card p { color: var(--text-muted); font-size: 14px; }
+
+        .tab-content { display: none; height: 100%; }
+        .tab-content.active { display: block; }
+        
+        .shortcut-manager-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        
+        input[type="file"]::file-selector-button {
+            background-color: var(--surface-hover); color: var(--text-color);
+            border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius); cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="brand">
+            Repositorio
+        </div>
+
+        <div class="nav-section">
+            <button class="nav-button active" onclick="switchTab('repo')">🗂️ Archivos</button>
+            <button class="nav-button" onclick="switchTab('favs')">★ Favoritos</button>
+            <button class="nav-button" onclick="switchTab('ai')">🤖 IA</button>
+        </div>
+
+        <div class="nav-section" style="flex: 1;">
+            <div class="nav-section-title">
+                Accesos Directos
+                <button class="btn-icon" onclick="openModal('modal-manage-shortcuts')">⚙️</button>
+            </div>
+            <div id="shortcuts-sidebar-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+        </div>
+
+        <div class="nav-section" style="margin-bottom: 0;">
+            <button class="nav-button" onclick="openModal('modal-settings')">⚙️ Ajustes</button>
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <button class="btn-icon" onclick="toggleSidebar()" title="Ocultar/Mostrar Menú">☰</button>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar..." oninput="onSearchInput()">
+            </div>
+            <button class="btn btn-primary" onclick="openPostEditor()">+ Nuevo</button>
+        </header>
+
+        <div class="content-area">
+            <div id="repo" class="tab-content active">
+                <div id="tag-filter-bar">
+                    <span id="active-category-label"></span>
+                    <button class="btn" style="padding: 2px 8px; font-size: 11px;" onclick="clearTagFilter()">Quitar filtro</button>
+                </div>
+                <div class="grid" id="posts-grid"></div>
+            </div>
+            <div id="favs" class="tab-content"><h2 style="margin-bottom: 20px;">Favoritos</h2><div class="grid" id="favs-grid"></div></div>
+            <div id="ai" class="tab-content">
+                <div style="display: flex; flex-direction: column; height: 100%; border: 1px solid var(--border-color);">
+                    <div id="chat-history" style="flex: 1; padding: 20px; overflow-y: auto;"></div>
+                    <div style="display: flex; border-top: 1px solid var(--border-color); padding: 10px; background: var(--surface-color);">
+                        <input type="text" id="ai-input" placeholder="Consulta..." style="border:none; background:transparent;">
+                        <button class="btn" onclick="sendAiMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Editor de Publicación -->
+    <div id="modal-post-editor" class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="editor-title" style="font-size: 16px;">Crear</h2>
+                <button class="btn-icon" onclick="closeModal('modal-post-editor')">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="post-form" onsubmit="savePost(event)">
+                    <input type="hidden" id="post-id">
+                    
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="post-title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción (Opcional)</label>
+                        <textarea id="post-desc" rows="3" placeholder="Añade detalles opcionales..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Enlace</label>
+                        <input type="url" id="post-link">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Hashtags (ej. #nota)</label>
+                        <input type="text" id="post-tags">
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top:15px;">
+                        <div class="form-group">
+                            <label>Imagen (Archivo local)</label>
+                            <input type="file" id="post-img-local" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label>Imagen (URL)</label>
+                            <input type="url" id="post-img-url">
+                        </div>
+                        <!-- VISTA PREVIA IMAGEN -->
+                        <div id="img-preview-container">
+                            <label>Vista previa de imagen:</label>
+                            <img id="img-preview-element" src="" alt="Vista previa">
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top:15px;">
+                        <div class="form-group">
+                            <label>Video (.mp4, .webm)</label>
+                            <input type="file" id="post-video-local" accept="video/mp4,video/webm">
+                        </div>
+                        <div class="form-group">
+                            <label>Video (YouTube URL)</label>
+                            <input type="url" id="post-video-yt">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                        <button type="button" class="btn" onclick="closeModal('modal-post-editor')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA COMPLETA: Publicación -->
+    <div id="view-post-screen" class="full-screen-view">
+        <div class="fs-header">
+            <button class="btn" onclick="closeFullScreen('view-post-screen')">← Volver</button>
+            
+            <div style="display:flex; align-items:center; gap: 15px;">
+                <button id="view-fav-btn" class="btn-icon" style="font-size: 20px;">☆</button>
+                <div class="dropdown">
+                    <button class="btn-icon" onclick="toggleDropdown()">⋮</button>
+                    <div id="post-options-menu" class="dropdown-content">
+                        <button id="btn-edit-post">Editar</button>
+                        <button id="btn-delete-post" style="color: var(--danger-color);">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="fs-content">
+            <h1 id="view-title" style="margin-bottom: 10px; font-weight: normal;"></h1>
+            
+            <div id="view-link-container" style="margin-bottom: 15px; display: none;">
+                <a id="view-link" href="#" target="_blank" style="color: var(--text-muted); text-decoration: underline;"></a>
+            </div>
+
+            <div id="view-desc" style="margin-bottom: 20px; color: var(--text-color); font-size: 15px; line-height: 1.5; white-space: pre-wrap; display: none;"></div>
+            
+            <div id="view-tags" style="margin-bottom: 30px; display: flex; gap: 8px; flex-wrap: wrap; color: var(--text-muted); font-size: 13px;"></div>
+            
+            <div id="view-media-container" style="display: flex; flex-direction: column; gap: 30px;"></div>
+        </div>
+    </div>
+
+    <!-- VISTA COMPLETA: Iframe Accesos Directos (con manejo de bloqueo e incrustación optimizada) -->
+    <div id="view-iframe-screen" class="full-screen-view">
+        <div class="fs-header">
+            <button class="btn" onclick="closeFullScreen('view-iframe-screen')">← Volver al repositorio</button>
+            <span id="iframe-title" style="font-weight: 500; color: var(--text-muted);"></span>
+            <div style="width: 80px;"></div>
+        </div>
+        <div id="iframe-wrapper" style="flex:1; display:flex; flex-direction:column; position:relative;">
+            <iframe id="shortcut-iframe" src="" style="width:100%; flex:1; border:none; background: var(--bg-color);"></iframe>
+            <div id="iframe-fallback" style="display:none; flex:1; align-items:center; justify-content:center;">
+                <div class="fallback-embed-card">
+                    <h3>Vista protegida</h3>
+                    <p id="fallback-msg">Este sitio web no permite ser mostrado directamente dentro de la aplicación debido a restricciones de seguridad del navegador.</p>
+                    <a id="fallback-link" href="#" target="_blank" class="btn btn-primary">Abrir en pestaña externa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Accesos Directos -->
+    <div id="modal-manage-shortcuts" class="modal-backdrop">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Accesos Directos</h2>
+                <button class="btn-icon" onclick="closeModal('modal-manage-shortcuts')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; background: var(--surface-color); padding: 15px; border: 1px solid var(--border-color);">
+                    <input type="text" id="new-sc-name" placeholder="Nombre" style="flex: 1; min-width: 120px;">
+                    <input type="url" id="new-sc-url" placeholder="URL" style="flex: 2; min-width: 150px;">
+                    <input type="color" id="new-sc-color" value="#ffffff" style="width: 40px; height: 35px; padding: 0;">
+                    <label style="display:flex; align-items:center; gap:5px; font-size:12px; cursor:pointer;">
+                        <input type="checkbox" id="new-sc-internal"> Abrir aquí mismo
+                    </label>
+                    <button class="btn btn-primary" onclick="addShortcut()">Añadir</button>
+                </div>
+                <div id="shortcut-manager-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ajustes -->
+    <div id="modal-settings" class="modal-backdrop">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Ajustes</h2>
+                <button class="btn-icon" onclick="closeModal('modal-settings')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Tema Visual</label>
+                    <select id="theme-select" onchange="changeTheme(this.value)" style="width:100%; padding: 10px; background: var(--surface-color); color: var(--text-color); border: 1px solid var(--border-color);">
+                        <option value="dark">Oscuro</option>
+                        <option value="light">Claro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>API Key IA (Gemini)</label>
+                    <input type="text" id="setting-api-key" placeholder="AIzaSy..." onchange="saveSettings()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === PERSISTENCIA: IndexedDB para archivos y posts ===
+        let db;
+        const request = indexedDB.open("RepoMinimalDB", 2);
+
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains('posts')) db.createObjectStore('posts', { keyPath: 'id' });
+        };
+
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            loadPostsFromDB();
+        };
+
+        let postsCache = [];
+        let activeTagFilter = null;
+
+        function loadPostsFromDB() {
+            const tx = db.transaction('posts', 'readonly');
+            tx.objectStore('posts').getAll().onsuccess = (e) => {
+                postsCache = e.target.result || [];
+                renderPosts();
+            };
+        }
+
+        function savePostToDB(post, callback) {
+            const tx = db.transaction('posts', 'readwrite');
+            tx.objectStore('posts').put(post);
+            tx.oncomplete = () => { loadPostsFromDB(); if(callback) callback(); };
+        }
+
+        function deletePostFromDB(id, callback) {
+            const tx = db.transaction('posts', 'readwrite');
+            tx.objectStore('posts').delete(id);
+            tx.oncomplete = () => { loadPostsFromDB(); if(callback) callback(); };
+        }
+
+        // === CONFIGURACIÓN Y ACCESOS (localStorage) ===
+        let settings = JSON.parse(localStorage.getItem('repo_settings_min')) || { theme: 'dark', apiKey: '' };
+        let shortcuts = JSON.parse(localStorage.getItem('repo_shortcuts_min')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applySettings();
+            renderShortcuts();
+            
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropdown .btn-icon')) {
+                    const dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let d of dropdowns) d.classList.remove('show');
+                }
+            }
+        });
+
+        function applySettings() {
+            document.documentElement.setAttribute('data-theme', settings.theme);
+            document.getElementById('theme-select').value = settings.theme;
+            document.getElementById('setting-api-key').value = settings.apiKey;
+        }
+
+        function changeTheme(theme) {
+            settings.theme = theme;
+            localStorage.setItem('repo_settings_min', JSON.stringify(settings));
+            applySettings();
+        }
+
+        function saveSettings() {
+            settings.apiKey = document.getElementById('setting-api-key').value;
+            localStorage.setItem('repo_settings_min', JSON.stringify(settings));
+        }
+
+        // === INTERFAZ GENERAL ===
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-section .nav-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if (tabId === 'repo' || tabId === 'favs') renderPosts();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function openFullScreen(id) { document.getElementById(id).classList.add('active'); }
+        function closeFullScreen(id) {
+            document.getElementById(id).classList.remove('active');
+            if(id === 'view-iframe-screen') {
+                document.getElementById('shortcut-iframe').src = "";
+                document.getElementById('shortcut-iframe').style.display = 'block';
+                document.getElementById('iframe-fallback').style.display = 'none';
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById("post-options-menu").classList.toggle("show");
+        }
+
+        // === ACCESOS DIRECTOS & VISOR URL COMPATIBLE ===
+        function renderShortcuts() {
+            const sidebarList = document.getElementById('shortcuts-sidebar-list');
+            const managerList = document.getElementById('shortcut-manager-list');
+            sidebarList.innerHTML = '';
+            managerList.innerHTML = '';
+
+            shortcuts.forEach((sc, index) => {
+                const isInternal = sc.internal;
+                const action = isInternal ? `onclick="openInternalLink('${sc.url}', '${sc.name}')"` : `href="${sc.url}" target="_blank"`;
+                const icon = isInternal ? '<span class="internal-icon" title="Abre aquí mismo">⧉</span>' : '';
+                
+                sidebarList.innerHTML += `
+                    <${isInternal ? 'div' : 'a'} ${action} class="shortcut-item">
+                        <div class="shortcut-color" style="background-color: ${sc.color};"></div>
+                        ${sc.name}
+                        ${icon}
+                    </${isInternal ? 'div' : 'a'}>
+                `;
+
+                managerList.innerHTML += `
+                    <div class="shortcut-manager-item">
+                        <input type="text" value="${sc.name}" onchange="updateShortcut(${index}, 'name', this.value)" style="width: 100px;">
+                        <input type="url" value="${sc.url}" onchange="updateShortcut(${index}, 'url', this.value)" style="flex:1;">
+                        <input type="color" value="${sc.color}" onchange="updateShortcut(${index}, 'color', this.value)" style="width:30px; height:30px; padding:0;">
+                        <label style="font-size:11px; cursor:pointer; display:flex; align-items:center;"><input type="checkbox" ${sc.internal ? 'checked' : ''} onchange="updateShortcut(${index}, 'internal', this.checked)"> Interno</label>
+                        <button class="btn-icon" style="color:var(--danger-color)" onclick="removeShortcut(${index})">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function formatEmbedUrl(url) {
+            try {
+                let parsed = new URL(url);
+                // YouTube normalización a embed
+                if (parsed.hostname.includes('youtube.com') || parsed.hostname.includes('youtu.be')) {
+                    let videoId = '';
+                    if (parsed.hostname.includes('youtu.be')) {
+                        videoId = parsed.pathname.slice(1);
+                    } else if (parsed.searchParams.has('v')) {
+                        videoId = parsed.searchParams.get('v');
+                    } else if (parsed.pathname.startsWith('/embed/')) {
+                        return url;
+                    }
+                    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+                }
+            } catch(e) {}
+            return url;
+        }
+
+        function openInternalLink(url, name) {
+            document.getElementById('iframe-title').textContent = name;
+            const iframe = document.getElementById('shortcut-iframe');
+            const fallback = document.getElementById('iframe-fallback');
+            const fallbackLink = document.getElementById('fallback-link');
+            
+            iframe.style.display = 'block';
+            fallback.style.display = 'none';
+
+            let embedUrl = formatEmbedUrl(url);
+            iframe.src = embedUrl;
+            fallbackLink.href = url;
+
+            // Detección si el sitio bloquea iframe por cabeceras X-Frame-Options / CSP
+            let loadTimeout = setTimeout(() => {
+                try {
+                    // Si el iframe sigue accesible tras un tiempo sin lanzar error de red grave o si se detecta bloqueo habitual en sitios como Google/YouTube principal
+                    if (url.includes('google.com') || url.includes('youtube.com') && !embedUrl.includes('embed')) {
+                        throw new Error("Bloqueado");
+                    }
+                } catch(err) {
+                    iframe.style.display = 'none';
+                    fallback.style.display = 'flex';
+                }
+            }, 1500);
+
+            iframe.onload = () => {
+                clearTimeout(loadTimeout);
+            };
+
+            openFullScreen('view-iframe-screen');
+        }
+
+        function addShortcut() {
+            const name = document.getElementById('new-sc-name').value.trim();
+            const url = document.getElementById('new-sc-url').value.trim();
+            if (name && url) {
+                shortcuts.push({ 
+                    name, url, 
+                    color: document.getElementById('new-sc-color').value,
+                    internal: document.getElementById('new-sc-internal').checked
+                });
+                localStorage.setItem('repo_shortcuts_min', JSON.stringify(shortcuts));
+                renderShortcuts();
+                document.getElementById('new-sc-name').value = '';
+                document.getElementById('new-sc-url').value = '';
+            }
+        }
+
+        function updateShortcut(index, field, value) {
+            shortcuts[index][field] = value;
+            localStorage.setItem('repo_shortcuts_min', JSON.stringify(shortcuts));
+            renderShortcuts();
+        }
+
+        function removeShortcut(index) {
+            shortcuts.splice(index, 1);
+            localStorage.setItem('repo_shortcuts_min', JSON.stringify(shortcuts));
+            renderShortcuts();
+        }
+
+        // === GESTIÓN DE IMAGEN PREVIA EN EDITOR ===
+        const imgInputLocal = document.getElementById('post-img-local');
+        const imgInputUrl = document.getElementById('post-img-url');
+        const previewContainer = document.getElementById('img-preview-container');
+        const previewElement = document.getElementById('img-preview-element');
+
+        function updateImagePreview(src) {
+            if(src) {
+                previewElement.src = src;
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+                previewElement.src = "";
+            }
+        }
+
+        imgInputLocal.addEventListener('change', function() {
+            if (this.files[0]) updateImagePreview(URL.createObjectURL(this.files[0]));
+            else if (imgInputUrl.value) updateImagePreview(imgInputUrl.value);
+            else updateImagePreview(null);
+        });
+
+        imgInputUrl.addEventListener('input', function() {
+            if (!imgInputLocal.files[0]) updateImagePreview(this.value);
+        });
+
+        function openPostEditor(editId = null) {
+            document.getElementById('post-form').reset();
+            document.getElementById('post-id').value = editId || '';
+            updateImagePreview(null);
+
+            if (editId) {
+                document.getElementById('editor-title').textContent = 'Editar';
+                const post = postsCache.find(p => p.id === editId);
+                if (post) {
+                    document.getElementById('post-title').value = post.title;
+                    document.getElementById('post-desc').value = post.desc || '';
+                    document.getElementById('post-link').value = post.link || '';
+                    document.getElementById('post-tags').value = post.tags.map(t => `#${t}`).join(' ');
+                    document.getElementById('post-img-url').value = post.imgUrl || '';
+                    document.getElementById('post-video-yt').value = post.ytUrl || '';
+                    
+                    if (post.imgLocalBlob) updateImagePreview(URL.createObjectURL(post.imgLocalBlob));
+                    else if (post.imgUrl) updateImagePreview(post.imgUrl);
+                }
+            } else {
+                document.getElementById('editor-title').textContent = 'Crear';
+            }
+            openModal('modal-post-editor');
+        }
+
+        function savePost(e) {
+            e.preventDefault();
+            const id = document.getElementById('post-id').value;
+            const existingPost = id ? postsCache.find(p => p.id === id) : null;
+
+            let tags = document.getElementById('post-tags').value
+                .split(/[\s,]+/).map(t => t.replace('#', '').trim()).filter(t => t);
+
+            const postData = {
+                id: id || 'post_' + Date.now(),
+                title: document.getElementById('post-title').value.trim(),
+                desc: document.getElementById('post-desc').value.trim(),
+                link: document.getElementById('post-link').value.trim(),
+                tags,
+                imgUrl: document.getElementById('post-img-url').value.trim(),
+                ytUrl: document.getElementById('post-video-yt').value.trim(),
+                timestamp: existingPost ? existingPost.timestamp : Date.now(),
+                favorite: existingPost ? existingPost.favorite : false,
+                imgLocalBlob: document.getElementById('post-img-local').files[0] || (existingPost ? existingPost.imgLocalBlob : null),
+                videoLocalBlob: document.getElementById('post-video-local').files[0] || (existingPost ? existingPost.videoLocalBlob : null)
+            };
+
+            savePostToDB(postData, () => closeModal('modal-post-editor'));
+        }
+
+        // === FILTRO POR CATEGORÍA DE HASHTAGS ===
+        function onSearchInput() {
+            renderPosts();
+            checkHashtagCategories();
+        }
+
+        function checkHashtagCategories() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const filterBar = document.getElementById('tag-filter-bar');
+            
+            // Detectar si hay múltiples hashtags en la base de datos para ofrecer filtro discreto
+            let allTags = new Set();
+            postsCache.forEach(p => p.tags.forEach(t => allTags.add(t.toLowerCase())));
+
+            if (query.startsWith('#') && allTags.size > 1 && !activeTagFilter) {
+                let searchedTag = query.replace('#', '').trim();
+                if (searchedTag) {
+                    activeTagFilter = searchedTag;
+                    document.getElementById('active-category-label').textContent = `Filtrando por categoría: #${searchedTag}`;
+                    filterBar.classList.add('active');
+                }
+            }
+        }
+
+        function clearTagFilter() {
+            activeTagFilter = null;
+            document.getElementById('tag-filter-bar').classList.remove('active');
+            document.getElementById('search-input').value = '';
+            renderPosts();
+        }
+
+        function renderPosts() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const isFavTab = document.getElementById('favs').classList.contains('active');
+            const container = isFavTab ? document.getElementById('favs-grid') : document.getElementById('posts-grid');
+            
+            container.innerHTML = '';
+            
+            let filtered = postsCache.filter(post => {
+                if (isFavTab && !post.favorite) return false;
+                if (activeTagFilter) {
+                    return post.tags.some(t => t.toLowerCase() === activeTagFilter);
+                }
+                if (!query) return true;
+                if (query.startsWith('#')) return post.tags.some(t => t.toLowerCase().includes(query.replace('#', '').trim()));
+                return post.title.toLowerCase().includes(query) || (post.desc && post.desc.toLowerCase().includes(query)) || post.tags.some(t => t.toLowerCase().includes(query));
+            });
+
+            filtered.sort((a, b) => b.timestamp - a.timestamp);
+
+            filtered.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => viewPost(post.id);
+                
+                // Generar miniatura superior con imagen o placeholder
+                let thumbHtml = '';
+                if (post.imgLocalBlob) {
+                    let thumbUrl = URL.createObjectURL(post.imgLocalBlob);
+                    currentObjectUrls.push(thumbUrl);
+                    thumbHtml = `<img src="${thumbUrl}" class="card-thumb">`;
+                } else if (post.imgUrl) {
+                    thumbHtml = `<img src="${post.imgUrl}" class="card-thumb">`;
+                } else {
+                    thumbHtml = `<div class="card-thumb-placeholder">📄</div>`;
+                }
+
+                card.innerHTML = `
+                    ${thumbHtml}
+                    <div class="card-body">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3>${post.title}</h3>
+                            <span style="color: ${post.favorite ? '#eab308' : 'var(--border-color)'}; font-size: 16px;">${post.favorite ? '★' : '☆'}</span>
+                        </div>
+                        ${post.tags.length ? `<div class="tags">${post.tags.map(t => `#${t}`).join(' ')}</div>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        let currentObjectUrls = [];
+
+        function viewPost(id) {
+            const post = postsCache.find(p => p.id === id);
+            if (!post) return;
+
+            currentObjectUrls.forEach(URL.revokeObjectURL);
+            currentObjectUrls = [];
+
+            document.getElementById('view-title').textContent = post.title;
+            
+            const favBtn = document.getElementById('view-fav-btn');
+            favBtn.textContent = post.favorite ? '★' : '☆';
+            favBtn.style.color = post.favorite ? '#eab308' : 'var(--text-color)';
+            favBtn.onclick = () => {
+                post.favorite = !post.favorite;
+                savePostToDB(post, () => {
+                    favBtn.textContent = post.favorite ? '★' : '☆';
+                    favBtn.style.color = post.favorite ? '#eab308' : 'var(--text-color)';
+                });
+            };
+
+            const linkContainer = document.getElementById('view-link-container');
+            const linkEl = document.getElementById('view-link');
+            if (post.link) {
+                linkContainer.style.display = 'block';
+                linkEl.href = post.link;
+                linkEl.textContent = post.link;
+            } else {
+                linkContainer.style.display = 'none';
+            }
+
+            const descEl = document.getElementById('view-desc');
+            if (post.desc) {
+                descEl.style.display = 'block';
+                descEl.textContent = post.desc;
+            } else {
+                descEl.style.display = 'none';
+            }
+
+            document.getElementById('view-tags').innerHTML = post.tags.map(t => `<span style="background:var(--surface-hover); padding:2px 8px; border-radius:4px;">#${t}</span>`).join('');
+
+            const mediaContainer = document.getElementById('view-media-container');
+            mediaContainer.innerHTML = '';
+
+            if (post.imgLocalBlob) {
+                const url = URL.createObjectURL(post.imgLocalBlob);
+                currentObjectUrls.push(url);
+                mediaContainer.innerHTML += `<div class="media-container"><img src="${url}"></div>`;
+            } else if (post.imgUrl) {
+                mediaContainer.innerHTML += `<div class="media-container"><img src="${post.imgUrl}"></div>`;
+            }
+
+            if (post.videoLocalBlob) {
+                const url = URL.createObjectURL(post.videoLocalBlob);
+                currentObjectUrls.push(url);
+                mediaContainer.innerHTML += `<div class="media-container"><video controls src="${url}"></video></div>`;
+            } else if (post.ytUrl) {
+                let embedUrl = formatEmbedUrl(post.ytUrl);
+                mediaContainer.innerHTML += `<div class="media-container" style="padding-top: 56.25%; position: relative;"><iframe src="${embedUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen></iframe></div>`;
+            }
+
+            document.getElementById('btn-edit-post').onclick = () => {
+                closeFullScreen('view-post-screen');
+                document.getElementById("post-options-menu").classList.remove('show');
+                openPostEditor(post.id);
+            };
+
+            document.getElementById('btn-delete-post').onclick = () => {
+                if(confirm("¿Eliminar publicación?")) {
+                    deletePostFromDB(post.id, () => {
+                        closeFullScreen('view-post-screen');
+                        document.getElementById("post-options-menu").classList.remove('show');
+                    });
+                }
+            };
+
+            openFullScreen('view-post-screen');
+        }
+
+        // === IA (Simple y Ligera) ===
+        async function sendAiMessage() {
+            const inputEl = document.getElementById('ai-input');
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            appendAiMessage(message, true);
+            inputEl.value = '';
+
+            if (!settings.apiKey) {
+                appendAiMessage("API Key requerida. Configúrala en Ajustes.", false);
+                return;
+            }
+
+            const ctx = postsCache.map(p => `- ${p.title} (${p.tags.join(',')})`).join('\n');
+            const prompt = `Eres un asistente en un repositorio minimalista. Contexto:\n${ctx}\n\nUsuario: ${message}`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                appendAiMessage(data.candidates[0].content.parts[0].text, false);
+            } catch (err) {
+                appendAiMessage("Error de conexión.", false);
+            }
+        }
+
+        function appendAiMessage(text, isUser) {
+            const container = document.getElementById('chat-history');
+            const div = document.createElement('div');
+            div.style.padding = '10px 15px';
+            div.style.marginBottom = '10px';
+            div.style.borderRadius = 'var(--radius)';
+            div.style.maxWidth = '85%';
+            div.style.whiteSpace = 'pre-wrap';
+            
+            if (isUser) {
+                div.style.alignSelf = 'flex-end';
+                div.style.marginLeft = 'auto';
+                div.style.backgroundColor = 'var(--surface-hover)';
+            } else {
+                div.style.borderLeft = '2px solid var(--text-color)';
+                div.style.backgroundColor = 'var(--surface-color)';
+            }
+            
+            div.textContent = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>
